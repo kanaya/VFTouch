@@ -6,7 +6,7 @@ and other countries. Trademarks of QUALCOMM Incorporated are used with permissio
 ===============================================================================*/
 
 #import <Foundation/Foundation.h>
-
+#import <OpenGLES/ES2/gl.h>
 
 @interface SampleApplicationShaderUtils : NSObject
 
