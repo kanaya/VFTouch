@@ -185,12 +185,29 @@ and other countries. Trademarks of QUALCOMM Incorporated are used with permissio
         NSLog(@"Failed to initialize ImageTracker.");
         return NO;
     }
+    NSLog(@"Successfully initialized ImageTracker.");
     return YES;
 }
 
 // load the data associated to the trackers
 - (bool) doLoadTrackersData {
-    return [self loadAndActivateImageTrackerDataSet:@"sodacan.xml"];
+    dataSetCylinder = [self loadImageTrackerDataSet:@"sodacan.xml"];
+    dataSetStonesAndChips = [self loadImageTrackerDataSet:@"StonesAndChips.xml"];
+    if ((dataSetCylinder == NULL) || (dataSetStonesAndChips == NULL)) {
+        NSLog(@"Failed to lad datasets");
+        return NO;
+    }
+    if (! [self activateDataSet:dataSetCylinder]) {
+        NSLog(@"Failed to activate dataset");
+        return NO;
+    }
+    if (! [self exActivateDateSet:dataSetStonesAndChips]) {
+        NSLog(@"Failed to activate dataset");
+        return NO;
+    }
+    
+    return YES;
+//    return [self loadAndActivateImageTrackerDataSet:@"sodacan.xml"];
 }
 
 // start the application trackers
@@ -210,6 +227,10 @@ and other countries. Trademarks of QUALCOMM Incorporated are used with permissio
     [loadingIndicator removeFromSuperview];
     
     if (initError == nil) {
+        // If you want multiple targets being detected at once,
+        // you can comment out this line
+        QCAR::setHint(QCAR::HINT_MAX_SIMULTANEOUS_IMAGE_TARGETS, 2);
+
         NSError * error = nil;
         [vapp startAR:QCAR::CameraDevice::CAMERA_BACK error:&error];
         
@@ -229,6 +250,40 @@ and other countries. Trademarks of QUALCOMM Incorporated are used with permissio
 - (void) onQCARUpdate: (QCAR::State *) state {
 }
 
+// Load the image tracker data set
+- (QCAR::DataSet *)loadImageTrackerDataSet:(NSString*)dataFile
+{
+    NSLog(@"loadImageTrackerDataSet (%@)", dataFile);
+    QCAR::DataSet * dataSet = NULL;
+    
+    // Get the QCAR tracker manager image tracker
+    QCAR::TrackerManager& trackerManager = QCAR::TrackerManager::getInstance();
+    QCAR::ImageTracker* imageTracker = static_cast<QCAR::ImageTracker*>(trackerManager.getTracker(QCAR::ImageTracker::getClassType()));
+    
+    if (NULL == imageTracker) {
+        NSLog(@"ERROR: failed to get the ImageTracker from the tracker manager");
+        return NULL;
+    } else {
+        dataSet = imageTracker->createDataSet();
+        
+        if (NULL != dataSet) {
+            NSLog(@"INFO: successfully loaded data set");
+            
+            // Load the data set from the app's resources location
+            if (!dataSet->load([dataFile cStringUsingEncoding:NSASCIIStringEncoding], QCAR::STORAGE_APPRESOURCE)) {
+                NSLog(@"ERROR: failed to load data set");
+                imageTracker->destroyDataSet(dataSet);
+                dataSet = NULL;
+            }
+        }
+        else {
+            NSLog(@"ERROR: failed to create data set");
+        }
+    }
+    
+    return dataSet;
+}
+
 // stop your trackerts
 - (bool) doStopTrackers {
     QCAR::TrackerManager& trackerManager = QCAR::TrackerManager::getInstance();
@@ -243,7 +298,8 @@ and other countries. Trademarks of QUALCOMM Incorporated are used with permissio
 
 // unload the data associated to your trackers
 - (bool) doUnloadTrackersData {
-    if (dataSet != NULL) {
+    if (dataSetCurrent != NULL) {
+        [self deactivateDataSet: dataSetCurrent];
         // Get the image tracker:
         QCAR::TrackerManager& trackerManager = QCAR::TrackerManager::getInstance();
         QCAR::ImageTracker* imageTracker = static_cast<QCAR::ImageTracker*>(trackerManager.getTracker(QCAR::ImageTracker::getClassType()));
@@ -254,18 +310,120 @@ and other countries. Trademarks of QUALCOMM Incorporated are used with permissio
             return NO;
         }
         // Activate the data set:
-        if (!imageTracker->deactivateDataSet(dataSet))
+        if (!imageTracker->deactivateDataSet(dataSetCurrent))
         {
             NSLog(@"Failed to deactivate data set.");
         }
         // Destroy the data set:
-        if (!imageTracker->destroyDataSet(dataSet))
+        if (!imageTracker->destroyDataSet(dataSetCurrent))
         {
             NSLog(@"Failed to destroy data set.");
         }
-        dataSet = NULL;
+        dataSetCurrent = NULL;
     }
     return YES;
+}
+
+- (BOOL)activateDataSet:(QCAR::DataSet *)theDataSet
+{
+    // if we've previously recorded an activation, deactivate it
+    if (dataSetCurrent != nil)
+    {
+        [self deactivateDataSet:dataSetCurrent];
+    }
+    BOOL success = NO;
+    
+    // Get the image tracker:
+    QCAR::TrackerManager& trackerManager = QCAR::TrackerManager::getInstance();
+    QCAR::ImageTracker* imageTracker = static_cast<QCAR::ImageTracker*>(trackerManager.getTracker(QCAR::ImageTracker::getClassType()));
+    
+    if (imageTracker == NULL) {
+        NSLog(@"Failed to load tracking data set because the ImageTracker has not been initialized.");
+    }
+    else
+    {
+        // Activate the data set:
+        if (!imageTracker->activateDataSet(theDataSet))
+        {
+            NSLog(@"Failed to activate data set.");
+        }
+        else
+        {
+            NSLog(@"Successfully activated data set.");
+            dataSetCurrent = theDataSet;
+            success = YES;
+        }
+    }
+    
+    return success;
+}
+
+- (BOOL)exActivateDateSet:(QCAR::DataSet*)theDataSet
+{
+    BOOL success = NO;
+    
+    // Get the image tracker:
+    QCAR::TrackerManager& trackerManager = QCAR::TrackerManager::getInstance();
+    QCAR::ImageTracker* imageTracker = static_cast<QCAR::ImageTracker*>(trackerManager.getTracker(QCAR::ImageTracker::getClassType()));
+    
+    if (imageTracker == NULL) {
+        NSLog(@"Failed to load tracking data set because the ImageTracker has not been initialized.");
+    }
+    else
+    {
+        // Activate the data set:
+        if (!imageTracker->activateDataSet(theDataSet))
+        {
+            NSLog(@"Failed to activate data set.");
+        }
+        else
+        {
+            NSLog(@"Successfully activated data set.");
+            dataSetCurrent = theDataSet;
+            success = YES;
+        }
+    }
+    
+    return success;
+}
+
+- (BOOL)deactivateDataSet:(QCAR::DataSet *)theDataSet
+{
+    if ((dataSetCurrent == nil) || (theDataSet != dataSetCurrent))
+    {
+        NSLog(@"Invalid request to deactivate data set.");
+        return NO;
+    }
+    
+    BOOL success = NO;
+    
+    // we deactivate the enhanced tracking
+    [self setExtendedTrackingForDataSet:theDataSet start:NO];
+    
+    // Get the image tracker:
+    QCAR::TrackerManager& trackerManager = QCAR::TrackerManager::getInstance();
+    QCAR::ImageTracker* imageTracker = static_cast<QCAR::ImageTracker*>(trackerManager.getTracker(QCAR::ImageTracker::getClassType()));
+    
+    if (imageTracker == NULL)
+    {
+        NSLog(@"Failed to unload tracking data set because the ImageTracker has not been initialized.");
+    }
+    else
+    {
+        // Activate the data set:
+        if (!imageTracker->deactivateDataSet(theDataSet))
+        {
+            NSLog(@"Failed to deactivate data set.");
+        }
+        else
+        {
+            success = YES;
+        }
+    }
+    
+    dataSetCurrent = nil;
+    
+    return success;
 }
 
 // deinitialize your trackers
@@ -290,7 +448,7 @@ and other countries. Trademarks of QUALCOMM Incorporated are used with permissio
 {
     NSLog(@"loadAndActivateImageTrackerDataSet (%@)", dataFile);
     BOOL ret = YES;
-    dataSet = NULL;
+    dataSetCurrent = NULL;
     
     // Get the QCAR tracker manager image tracker
     QCAR::TrackerManager& trackerManager = QCAR::TrackerManager::getInstance();
@@ -300,20 +458,20 @@ and other countries. Trademarks of QUALCOMM Incorporated are used with permissio
         NSLog(@"ERROR: failed to get the ImageTracker from the tracker manager");
         ret = NO;
     } else {
-        dataSet = imageTracker->createDataSet();
+        dataSetCurrent = imageTracker->createDataSet();
         
-        if (NULL != dataSet) {
+        if (NULL != dataSetCurrent) {
             NSLog(@"INFO: successfully loaded data set");
             
             // Load the data set from the app's resources location
-            if (!dataSet->load([dataFile cStringUsingEncoding:NSASCIIStringEncoding], QCAR::STORAGE_APPRESOURCE)) {
+            if (!dataSetCurrent->load([dataFile cStringUsingEncoding:NSASCIIStringEncoding], QCAR::STORAGE_APPRESOURCE)) {
                 NSLog(@"ERROR: failed to load data set");
-                imageTracker->destroyDataSet(dataSet);
-                dataSet = NULL;
+                imageTracker->destroyDataSet(dataSetCurrent);
+                dataSetCurrent = NULL;
                 ret = NO;
             } else {
                 // Activate the data set
-                if (imageTracker->activateDataSet(dataSet)) {
+                if (imageTracker->activateDataSet(dataSetCurrent)) {
                     NSLog(@"INFO: successfully activated data set");
                 }
                 else {
@@ -395,7 +553,7 @@ typedef enum {
             break;
         
         case C_EXTENDED_TRACKING:
-            result = [self setExtendedTrackingForDataSet:dataSet start:value];
+            result = [self setExtendedTrackingForDataSet:dataSetCurrent start:value];
             if (result) {
                 [eaglView setOffTargetTrackingMode:value];
             }
@@ -420,7 +578,7 @@ typedef enum {
             result = QCAR::CameraDevice::getInstance().setFocusMode(focusMode);
         }
             break;
-            
+                        
         default:
             result = false;
             break;
