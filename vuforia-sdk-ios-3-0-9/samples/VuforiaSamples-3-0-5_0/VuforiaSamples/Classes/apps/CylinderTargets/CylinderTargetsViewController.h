@@ -16,7 +16,13 @@ and other countries. Trademarks of QUALCOMM Incorporated are used with permissio
     CylinderTargetsEAGLView* eaglView;
     UITapGestureRecognizer * tapGestureRecognizer;
     SampleApplicationSession * vapp;
-    QCAR::DataSet*  dataSet;
+//    QCAR::DataSet*  dataSet;
+    QCAR::DataSet*  dataSetCurrent;
+    QCAR::DataSet*  dataSetCylinder;
+    QCAR::DataSet*  dataSetStonesAndChips;
+    
+    BOOL switchToCylinder;
+    BOOL switchToStonesAndChips;
 }
 
 @end

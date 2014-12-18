@@ -13,7 +13,7 @@ and other countries. Trademarks of QUALCOMM Incorporated are used with permissio
 #import "SampleApplicationSession.h"
 #import "CylinderModel.h"
 
-#define NUM_AUGMENTATION_TEXTURES 2
+#define NUM_AUGMENTATION_TEXTURES 4
 
 
 // CylinderTargets is a subclass of UIView and conforms to the informal protocol
@@ -46,6 +46,9 @@ and other countries. Trademarks of QUALCOMM Incorporated are used with permissio
     BOOL offTargetTrackingEnabled;
 
     SampleApplicationSession * vapp;
+
+    NSMutableArray *drawLines;
+    NSMutableArray *drawLine;
 }
 
 - (id)initWithFrame:(CGRect)frame appSession:(SampleApplicationSession *) app;
