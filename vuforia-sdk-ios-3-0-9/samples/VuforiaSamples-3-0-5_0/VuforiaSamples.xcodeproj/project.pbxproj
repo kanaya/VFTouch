@@ -115,6 +115,7 @@
 		18FBCF1317EA5EC800FDF286 /* sodacan.xml in Resources */ = {isa = PBXBuildFile; fileRef = 18FBCF0F17EA5EC800FDF286 /* sodacan.xml */; };
 		18FBCF1417EA5EC800FDF286 /* TextureSoccerBall.png in Resources */ = {isa = PBXBuildFile; fileRef = 18FBCF1017EA5EC800FDF286 /* TextureSoccerBall.png */; };
 		18FBCF1517EA5EC800FDF286 /* TextureTransparent.png in Resources */ = {isa = PBXBuildFile; fileRef = 18FBCF1117EA5EC800FDF286 /* TextureTransparent.png */; };
+		BF95E5CD1A42830F00575C08 /* opencv2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BF95E5CC1A42830F00575C08 /* opencv2.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -272,6 +273,7 @@
 		18FBCF1017EA5EC800FDF286 /* TextureSoccerBall.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = TextureSoccerBall.png; sourceTree = "<group>"; };
 		18FBCF1117EA5EC800FDF286 /* TextureTransparent.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = TextureTransparent.png; sourceTree = "<group>"; };
 		18FBCF1617EA635400FDF286 /* SoccerballSphere.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SoccerballSphere.h; sourceTree = "<group>"; };
+		BF95E5CC1A42830F00575C08 /* opencv2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = opencv2.framework; path = OpenCV2/opencv2.framework; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -279,6 +281,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BF95E5CD1A42830F00575C08 /* opencv2.framework in Frameworks */,
 				188BB43E17BD99DD0080509A /* CoreVideo.framework in Frameworks */,
 				188BB43C17BD99A60080509A /* CoreMedia.framework in Frameworks */,
 				188BB43A17BD999A0080509A /* AVFoundation.framework in Frameworks */,
@@ -423,6 +426,7 @@
 		1868D1B317BD472000E47566 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				BF95E5CC1A42830F00575C08 /* opencv2.framework */,
 				188BB41417BD93510080509A /* libVuforia.a */,
 				188BB43D17BD99DD0080509A /* CoreVideo.framework */,
 				188BB43B17BD99A60080509A /* CoreMedia.framework */,
@@ -865,6 +869,7 @@
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -883,7 +888,6 @@
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				CODE_SIGN_IDENTITY = "iPhone Developer";
 			};
 			name = Debug;
 		};
@@ -896,6 +900,7 @@
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				COPY_PHASE_STRIP = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
@@ -908,25 +913,26 @@
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
 			};
 			name = Release;
 		};
 		1868D1D817BD472000E47566 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = (
-					armv7s,
-					armv7,
-				);
+				ARCHS = armv7;
+				CLANG_CXX_LIBRARY = "libstdc++";
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CURRENT_PROJECT_VERSION = 21;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/OpenCV2",
+				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "VuforiaSamples/VuforiaSamples-Prefix.pch";
 				HEADER_SEARCH_PATHS = ../../build/include;
 				INFOPLIST_FILE = "VuforiaSamples/VuforiaSamples-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.1;
 				LIBRARY_SEARCH_PATHS = ../../build/lib/arm;
 				PRODUCT_NAME = Vuforia;
 				PROVISIONING_PROFILE = "";
@@ -938,18 +944,20 @@
 		1868D1D917BD472000E47566 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = (
-					armv7s,
-					armv7,
-				);
+				ARCHS = armv7;
+				CLANG_CXX_LIBRARY = "libstdc++";
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CURRENT_PROJECT_VERSION = 21;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/OpenCV2",
+				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "VuforiaSamples/VuforiaSamples-Prefix.pch";
 				HEADER_SEARCH_PATHS = ../../build/include;
 				INFOPLIST_FILE = "VuforiaSamples/VuforiaSamples-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.1;
 				LIBRARY_SEARCH_PATHS = ../../build/lib/arm;
 				PRODUCT_NAME = Vuforia;
 				PROVISIONING_PROFILE = "";
